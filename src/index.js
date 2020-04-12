@@ -14,9 +14,12 @@ import {
 import mousemoveDispatcher from 'dom-mousemove-dispatcher';
 
 const prefix = [ 'webkit', 'moz', 'ms', 'o' ];
-const window = typeof window !== "undefined" ? window : {};
 
 const requestFrame = (() => {
+
+    if (typeof window === "undefined") {
+        return () => {};
+    }
 
     for ( let i = 0, limit = prefix.length ; i < limit && ! window.requestAnimationFrame ; ++i ) {
         window.requestAnimationFrame = window[ prefix[ i ] + 'RequestAnimationFrame' ];
@@ -40,6 +43,10 @@ const requestFrame = (() => {
 })();
 
 const cancelFrame = (() => {
+
+    if (typeof window === "undefined") {
+        return () => {};
+    }
 
     for ( let i = 0, limit = prefix.length ; i < limit && ! window.cancelAnimationFrame ; ++i ) {
         window.cancelAnimationFrame = window[ prefix[ i ] + 'CancelAnimationFrame' ] || window[ prefix[ i ] + 'CancelRequestAnimationFrame' ];
