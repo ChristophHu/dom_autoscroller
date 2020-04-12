@@ -8,9 +8,12 @@ var domPlane = require('dom-plane');
 var mousemoveDispatcher = _interopDefault(require('dom-mousemove-dispatcher'));
 
 var prefix = [ 'webkit', 'moz', 'ms', 'o' ];
-var window = typeof window !== "undefined" ? window : {};
 
 var requestFrame = (function () {
+
+    if (typeof window === "undefined") {
+        return function () {};
+    }
 
     for ( var i = 0, limit = prefix.length ; i < limit && ! window.requestAnimationFrame ; ++i ) {
         window.requestAnimationFrame = window[ prefix[ i ] + 'RequestAnimationFrame' ];
@@ -34,6 +37,10 @@ var requestFrame = (function () {
 })();
 
 var cancelFrame = (function () {
+
+    if (typeof window === "undefined") {
+        return function () {};
+    }
 
     for ( var i = 0, limit = prefix.length ; i < limit && ! window.cancelAnimationFrame ; ++i ) {
         window.cancelAnimationFrame = window[ prefix[ i ] + 'CancelAnimationFrame' ] || window[ prefix[ i ] + 'CancelRequestAnimationFrame' ];

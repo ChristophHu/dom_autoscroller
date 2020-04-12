@@ -652,21 +652,24 @@ function setSpecial(e, data) {
 }
 
 var prefix = [ 'webkit', 'moz', 'ms', 'o' ];
-var window$1 = typeof window$1 !== "undefined" ? window$1 : {};
 
 var requestFrame = (function () {
 
-    for ( var i = 0, limit = prefix.length ; i < limit && ! window$1.requestAnimationFrame ; ++i ) {
-        window$1.requestAnimationFrame = window$1[ prefix[ i ] + 'RequestAnimationFrame' ];
+    if (typeof window === "undefined") {
+        return function () {};
     }
 
-    if ( ! window$1.requestAnimationFrame ) {
+    for ( var i = 0, limit = prefix.length ; i < limit && ! window.requestAnimationFrame ; ++i ) {
+        window.requestAnimationFrame = window[ prefix[ i ] + 'RequestAnimationFrame' ];
+    }
+
+    if ( ! window.requestAnimationFrame ) {
         var lastTime = 0;
 
-        window$1.requestAnimationFrame = function (callback) {
+        window.requestAnimationFrame = function (callback) {
             var now   = new Date().getTime();
             var ttc   = Math.max( 0, 16 - now - lastTime );
-            var timer = window$1.setTimeout( function () { return callback( now + ttc ); }, ttc );
+            var timer = window.setTimeout( function () { return callback( now + ttc ); }, ttc );
 
             lastTime = now + ttc;
 
@@ -674,22 +677,26 @@ var requestFrame = (function () {
         };
     }
 
-    return window$1.requestAnimationFrame.bind( window$1 );
+    return window.requestAnimationFrame.bind( window );
 })();
 
 var cancelFrame = (function () {
 
-    for ( var i = 0, limit = prefix.length ; i < limit && ! window$1.cancelAnimationFrame ; ++i ) {
-        window$1.cancelAnimationFrame = window$1[ prefix[ i ] + 'CancelAnimationFrame' ] || window$1[ prefix[ i ] + 'CancelRequestAnimationFrame' ];
+    if (typeof window === "undefined") {
+        return function () {};
     }
 
-    if ( ! window$1.cancelAnimationFrame ) {
-        window$1.cancelAnimationFrame = function (timer) {
-            window$1.clearTimeout( timer );
+    for ( var i = 0, limit = prefix.length ; i < limit && ! window.cancelAnimationFrame ; ++i ) {
+        window.cancelAnimationFrame = window[ prefix[ i ] + 'CancelAnimationFrame' ] || window[ prefix[ i ] + 'CancelRequestAnimationFrame' ];
+    }
+
+    if ( ! window.cancelAnimationFrame ) {
+        window.cancelAnimationFrame = function (timer) {
+            window.clearTimeout( timer );
         };
     }
 
-    return window$1.cancelAnimationFrame.bind( window$1 );
+    return window.cancelAnimationFrame.bind( window );
 })();
 
 function AutoScroller(elements, options){
@@ -707,8 +714,8 @@ function AutoScroller(elements, options){
         dispatcher = createDispatcher(),
         down = false;
 
-    window$1.addEventListener('mousemove', pointCB, false);
-    window$1.addEventListener('touchmove', pointCB, false);
+    window.addEventListener('mousemove', pointCB, false);
+    window.addEventListener('touchmove', pointCB, false);
 
     if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
@@ -718,19 +725,19 @@ function AutoScroller(elements, options){
     this.syncMove = boolean(options.syncMove, false);
 
     this.destroy = function(forceCleanAnimation) {
-        window$1.removeEventListener('mousemove', pointCB, false);
-        window$1.removeEventListener('touchmove', pointCB, false);
-        window$1.removeEventListener('mousedown', onDown, false);
-        window$1.removeEventListener('touchstart', onDown, false);
-        window$1.removeEventListener('mouseup', onUp, false);
-        window$1.removeEventListener('touchend', onUp, false);
-        window$1.removeEventListener('pointerup', onUp, false);
-        window$1.removeEventListener('mouseleave', onMouseOut, false);
+        window.removeEventListener('mousemove', pointCB, false);
+        window.removeEventListener('touchmove', pointCB, false);
+        window.removeEventListener('mousedown', onDown, false);
+        window.removeEventListener('touchstart', onDown, false);
+        window.removeEventListener('mouseup', onUp, false);
+        window.removeEventListener('touchend', onUp, false);
+        window.removeEventListener('pointerup', onUp, false);
+        window.removeEventListener('mouseleave', onMouseOut, false);
 
-        window$1.removeEventListener('mousemove', onMove, false);
-        window$1.removeEventListener('touchmove', onMove, false);
+        window.removeEventListener('mousemove', onMove, false);
+        window.removeEventListener('touchmove', onMove, false);
 
-        window$1.removeEventListener('scroll', setScroll, true);
+        window.removeEventListener('scroll', setScroll, true);
         elements = [];
         if(forceCleanAnimation){
           cleanAnimation();
@@ -761,8 +768,8 @@ function AutoScroller(elements, options){
     (function(temp){
         elements = [];
         temp.forEach(function(element){
-            if(element === window$1){
-                hasWindow = window$1;
+            if(element === window){
+                hasWindow = window;
             }else{
                 self.add(element);
             }
@@ -786,10 +793,10 @@ function AutoScroller(elements, options){
 
     var n = 0, current = null, animationFrame;
 
-    window$1.addEventListener('mousedown', onDown, false);
-    window$1.addEventListener('touchstart', onDown, false);
-    window$1.addEventListener('mouseup', onUp, false);
-    window$1.addEventListener('touchend', onUp, false);
+    window.addEventListener('mousedown', onDown, false);
+    window.addEventListener('touchstart', onDown, false);
+    window.addEventListener('mouseup', onUp, false);
+    window.addEventListener('touchend', onUp, false);
 
     /*
     IE does not trigger mouseup event when scrolling.
@@ -797,14 +804,14 @@ function AutoScroller(elements, options){
     https://connect.microsoft.com/IE/feedback/details/783058/scrollbar-trigger-mousedown-but-not-mouseup
     IE supports pointer events instead
     */
-    window$1.addEventListener('pointerup', onUp, false);
+    window.addEventListener('pointerup', onUp, false);
 
-    window$1.addEventListener('mousemove', onMove, false);
-    window$1.addEventListener('touchmove', onMove, false);
+    window.addEventListener('mousemove', onMove, false);
+    window.addEventListener('touchmove', onMove, false);
 
-    window$1.addEventListener('mouseleave', onMouseOut, false);
+    window.addEventListener('mouseleave', onMouseOut, false);
 
-    window$1.addEventListener('scroll', setScroll, true);
+    window.addEventListener('scroll', setScroll, true);
 
     function setScroll(e){
 
@@ -992,16 +999,16 @@ function AutoScroller(elements, options){
     }
 
     function scrollY(el, amount){
-        if(el === window$1){
-            window$1.scrollTo(el.pageXOffset, el.pageYOffset + amount);
+        if(el === window){
+            window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
         }else{
             el.scrollTop += amount;
         }
     }
 
     function scrollX(el, amount){
-        if(el === window$1){
-            window$1.scrollTo(el.pageXOffset + amount, el.pageYOffset);
+        if(el === window){
+            window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
         }else{
             el.scrollLeft += amount;
         }
