@@ -31,50 +31,6 @@ function boolean(func, def) {
     };
 }
 
-var prefix = ['webkit', 'moz', 'ms', 'o'];
-
-var requestAnimationFrame = function () {
-
-  for (var i = 0, limit = prefix.length; i < limit && !window.requestAnimationFrame; ++i) {
-    window.requestAnimationFrame = window[prefix[i] + 'RequestAnimationFrame'];
-  }
-
-  if (!window.requestAnimationFrame) {
-    (function () {
-      var lastTime = 0;
-
-      window.requestAnimationFrame = function (callback) {
-        var now = new Date().getTime();
-        var ttc = Math.max(0, 16 - now - lastTime);
-        var timer = window.setTimeout(function () {
-          return callback(now + ttc);
-        }, ttc);
-
-        lastTime = now + ttc;
-
-        return timer;
-      };
-    })();
-  }
-
-  return window.requestAnimationFrame.bind(window);
-}();
-
-var cancelAnimationFrame = function () {
-
-  for (var i = 0, limit = prefix.length; i < limit && !window.cancelAnimationFrame; ++i) {
-    window.cancelAnimationFrame = window[prefix[i] + 'CancelAnimationFrame'] || window[prefix[i] + 'CancelRequestAnimationFrame'];
-  }
-
-  if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = function (timer) {
-      window.clearTimeout(timer);
-    };
-  }
-
-  return window.cancelAnimationFrame.bind(window);
-}();
-
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 // Reference: http://www.ecma-international.org/ecma-262/6.0/#sec-array.from
 var polyfill = (function() {

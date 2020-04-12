@@ -1,5 +1,4 @@
 import { boolean } from 'type-func';
-import { cancelAnimationFrame, requestAnimationFrame } from 'animation-frame-polyfill';
 import { addElements, hasElement, removeElements } from 'dom-set';
 import { createPointCB, getClientRect, pointInside } from 'dom-plane';
 import mousemoveDispatcher from 'dom-mousemove-dispatcher';

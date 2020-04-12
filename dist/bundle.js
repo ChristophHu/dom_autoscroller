@@ -3,7 +3,6 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var typeFunc = require('type-func');
-var animationFramePolyfill = require('animation-frame-polyfill');
 var domSet = require('dom-set');
 var domPlane = require('dom-plane');
 var mousemoveDispatcher = _interopDefault(require('dom-mousemove-dispatcher'));
@@ -132,7 +131,7 @@ function AutoScroller(elements, options){
         }
 
         if(scrolling){
-            animationFramePolyfill.requestAnimationFrame(function (){ return scrolling = false; });
+            requestAnimationFrame(function (){ return scrolling = false; });
         }
     }
 
@@ -145,8 +144,8 @@ function AutoScroller(elements, options){
         cleanAnimation();
     }
     function cleanAnimation(){
-      animationFramePolyfill.cancelAnimationFrame(animationFrame);
-      animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
+      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(windowAnimationFrame);
     }
     function onMouseOut(){
         down = false;
@@ -218,8 +217,8 @@ function AutoScroller(elements, options){
         }
 
         if(hasWindow){
-            animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
-            windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
+            cancelAnimationFrame(windowAnimationFrame);
+            windowAnimationFrame = requestAnimationFrame(scrollWindow);
         }
 
 
@@ -227,15 +226,15 @@ function AutoScroller(elements, options){
             return;
         }
 
-        animationFramePolyfill.cancelAnimationFrame(animationFrame);
-        animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(scrollTick);
     }
 
     function scrollWindow(){
         autoScroll(hasWindow);
 
-        animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
-        windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
+        cancelAnimationFrame(windowAnimationFrame);
+        windowAnimationFrame = requestAnimationFrame(scrollWindow);
     }
 
     function scrollTick(){
@@ -246,8 +245,8 @@ function AutoScroller(elements, options){
 
         autoScroll(current);
 
-        animationFramePolyfill.cancelAnimationFrame(animationFrame);
-        animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(scrollTick);
 
     }
 

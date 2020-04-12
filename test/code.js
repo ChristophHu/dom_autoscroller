@@ -976,57 +976,6 @@ exports.string = string;
 
 });
 
-var animationFramePolyfill_cjs = createCommonjsModule(function (module, exports) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var prefix = ['webkit', 'moz', 'ms', 'o'];
-
-var requestAnimationFrame = exports.requestAnimationFrame = function () {
-
-  for (var i = 0, limit = prefix.length; i < limit && !window.requestAnimationFrame; ++i) {
-    window.requestAnimationFrame = window[prefix[i] + 'RequestAnimationFrame'];
-  }
-
-  if (!window.requestAnimationFrame) {
-    (function () {
-      var lastTime = 0;
-
-      window.requestAnimationFrame = function (callback) {
-        var now = new Date().getTime();
-        var ttc = Math.max(0, 16 - now - lastTime);
-        var timer = window.setTimeout(function () {
-          return callback(now + ttc);
-        }, ttc);
-
-        lastTime = now + ttc;
-
-        return timer;
-      };
-    })();
-  }
-
-  return window.requestAnimationFrame.bind(window);
-}();
-
-var cancelAnimationFrame = exports.cancelAnimationFrame = function () {
-
-  for (var i = 0, limit = prefix.length; i < limit && !window.cancelAnimationFrame; ++i) {
-    window.cancelAnimationFrame = window[prefix[i] + 'CancelAnimationFrame'] || window[prefix[i] + 'CancelRequestAnimationFrame'];
-  }
-
-  if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = function (timer) {
-      window.clearTimeout(timer);
-    };
-  }
-
-  return window.cancelAnimationFrame.bind(window);
-}();
-});
-
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 // Reference: http://www.ecma-international.org/ecma-262/6.0/#sec-array.from
 var polyfill = (function() {
@@ -1749,7 +1698,6 @@ var bundle$10 = createDispatcher;
 function _interopDefault$1 (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var typeFunc = bundle$2;
-var animationFramePolyfill = animationFramePolyfill_cjs;
 var domSet = bundle$4;
 var domPlane = bundle$6;
 var mousemoveDispatcher = _interopDefault$1(bundle$10);
@@ -1882,7 +1830,7 @@ function AutoScroller(elements, options){
         }
 
         if(scrolling){
-            animationFramePolyfill.requestAnimationFrame(function (){ return scrolling = false; });
+            requestAnimationFrame(function (){ return scrolling = false; });
         }
     }
 
@@ -1895,8 +1843,8 @@ function AutoScroller(elements, options){
         cleanAnimation();
     }
     function cleanAnimation(){
-      animationFramePolyfill.cancelAnimationFrame(animationFrame);
-      animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
+      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(windowAnimationFrame);
     }
     function onMouseOut(){
         down = false;
@@ -1968,8 +1916,8 @@ function AutoScroller(elements, options){
         }
 
         if(hasWindow){
-            animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
-            windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
+            cancelAnimationFrame(windowAnimationFrame);
+            windowAnimationFrame = requestAnimationFrame(scrollWindow);
         }
 
 
@@ -1977,15 +1925,15 @@ function AutoScroller(elements, options){
             return;
         }
 
-        animationFramePolyfill.cancelAnimationFrame(animationFrame);
-        animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(scrollTick);
     }
 
     function scrollWindow(){
         autoScroll(hasWindow);
 
-        animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
-        windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
+        cancelAnimationFrame(windowAnimationFrame);
+        windowAnimationFrame = requestAnimationFrame(scrollWindow);
     }
 
     function scrollTick(){
@@ -1996,8 +1944,8 @@ function AutoScroller(elements, options){
 
         autoScroll(current);
 
-        animationFramePolyfill.cancelAnimationFrame(animationFrame);
-        animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(scrollTick);
 
     }
 

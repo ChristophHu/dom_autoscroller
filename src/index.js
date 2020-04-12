@@ -1,9 +1,5 @@
 import {boolean} from 'type-func';
 import {
-    requestAnimationFrame as requestFrame,
-    cancelAnimationFrame as cancelFrame
-} from 'animation-frame-polyfill';
-import {
     hasElement,
     addElements,
     removeElements
@@ -133,7 +129,7 @@ function AutoScroller(elements, options = {}){
         }
 
         if(scrolling){
-            requestFrame(()=>scrolling = false)
+            requestAnimationFrame(()=>scrolling = false)
         }
     }
 
@@ -146,8 +142,8 @@ function AutoScroller(elements, options = {}){
         cleanAnimation();
     }
     function cleanAnimation(){
-      cancelFrame(animationFrame);
-      cancelFrame(windowAnimationFrame);
+      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(windowAnimationFrame);
     }
     function onMouseOut(){
         down = false;
@@ -219,8 +215,8 @@ function AutoScroller(elements, options = {}){
         }
 
         if(hasWindow){
-            cancelFrame(windowAnimationFrame);
-            windowAnimationFrame = requestFrame(scrollWindow);
+            cancelAnimationFrame(windowAnimationFrame);
+            windowAnimationFrame = requestAnimationFrame(scrollWindow);
         }
 
 
@@ -228,15 +224,15 @@ function AutoScroller(elements, options = {}){
             return;
         }
 
-        cancelFrame(animationFrame);
-        animationFrame = requestFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(scrollTick);
     }
 
     function scrollWindow(){
         autoScroll(hasWindow);
 
-        cancelFrame(windowAnimationFrame);
-        windowAnimationFrame = requestFrame(scrollWindow);
+        cancelAnimationFrame(windowAnimationFrame);
+        windowAnimationFrame = requestAnimationFrame(scrollWindow);
     }
 
     function scrollTick(){
@@ -247,8 +243,8 @@ function AutoScroller(elements, options = {}){
 
         autoScroll(current);
 
-        cancelFrame(animationFrame);
-        animationFrame = requestFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(scrollTick);
 
     }
 
