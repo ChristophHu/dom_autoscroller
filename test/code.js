@@ -1702,6 +1702,47 @@ var domSet = bundle$4;
 var domPlane = bundle$6;
 var mousemoveDispatcher = _interopDefault$1(bundle$10);
 
+var prefix = [ 'webkit', 'moz', 'ms', 'o' ];
+var window$1 = typeof window$1 !== "undefined" ? window$1 : {};
+
+var requestFrame = (function () {
+
+    for ( var i = 0, limit = prefix.length ; i < limit && ! window$1.requestAnimationFrame ; ++i ) {
+        window$1.requestAnimationFrame = window$1[ prefix[ i ] + 'RequestAnimationFrame' ];
+    }
+
+    if ( ! window$1.requestAnimationFrame ) {
+        var lastTime = 0;
+
+        window$1.requestAnimationFrame = function (callback) {
+            var now   = new Date().getTime();
+            var ttc   = Math.max( 0, 16 - now - lastTime );
+            var timer = window$1.setTimeout( function () { return callback( now + ttc ); }, ttc );
+
+            lastTime = now + ttc;
+
+            return timer;
+        };
+    }
+
+    return window$1.requestAnimationFrame.bind( window$1 );
+})();
+
+var cancelFrame = (function () {
+
+    for ( var i = 0, limit = prefix.length ; i < limit && ! window$1.cancelAnimationFrame ; ++i ) {
+        window$1.cancelAnimationFrame = window$1[ prefix[ i ] + 'CancelAnimationFrame' ] || window$1[ prefix[ i ] + 'CancelRequestAnimationFrame' ];
+    }
+
+    if ( ! window$1.cancelAnimationFrame ) {
+        window$1.cancelAnimationFrame = function (timer) {
+            window$1.clearTimeout( timer );
+        };
+    }
+
+    return window$1.cancelAnimationFrame.bind( window$1 );
+})();
+
 function AutoScroller(elements, options){
     if ( options === void 0 ) { options = {}; }
 
@@ -1717,8 +1758,8 @@ function AutoScroller(elements, options){
         dispatcher = mousemoveDispatcher(),
         down = false;
 
-    window.addEventListener('mousemove', pointCB, false);
-    window.addEventListener('touchmove', pointCB, false);
+    window$1.addEventListener('mousemove', pointCB, false);
+    window$1.addEventListener('touchmove', pointCB, false);
 
     if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
@@ -1728,19 +1769,19 @@ function AutoScroller(elements, options){
     this.syncMove = typeFunc.boolean(options.syncMove, false);
 
     this.destroy = function(forceCleanAnimation) {
-        window.removeEventListener('mousemove', pointCB, false);
-        window.removeEventListener('touchmove', pointCB, false);
-        window.removeEventListener('mousedown', onDown, false);
-        window.removeEventListener('touchstart', onDown, false);
-        window.removeEventListener('mouseup', onUp, false);
-        window.removeEventListener('touchend', onUp, false);
-        window.removeEventListener('pointerup', onUp, false);
-        window.removeEventListener('mouseleave', onMouseOut, false);
+        window$1.removeEventListener('mousemove', pointCB, false);
+        window$1.removeEventListener('touchmove', pointCB, false);
+        window$1.removeEventListener('mousedown', onDown, false);
+        window$1.removeEventListener('touchstart', onDown, false);
+        window$1.removeEventListener('mouseup', onUp, false);
+        window$1.removeEventListener('touchend', onUp, false);
+        window$1.removeEventListener('pointerup', onUp, false);
+        window$1.removeEventListener('mouseleave', onMouseOut, false);
 
-        window.removeEventListener('mousemove', onMove, false);
-        window.removeEventListener('touchmove', onMove, false);
+        window$1.removeEventListener('mousemove', onMove, false);
+        window$1.removeEventListener('touchmove', onMove, false);
 
-        window.removeEventListener('scroll', setScroll, true);
+        window$1.removeEventListener('scroll', setScroll, true);
         elements = [];
         if(forceCleanAnimation){
           cleanAnimation();
@@ -1775,8 +1816,8 @@ function AutoScroller(elements, options){
     (function(temp){
         elements = [];
         temp.forEach(function(element){
-            if(element === window){
-                hasWindow = window;
+            if(element === window$1){
+                hasWindow = window$1;
             }else{
                 self.add(element);
             }
@@ -1800,10 +1841,10 @@ function AutoScroller(elements, options){
 
     var n = 0, current = null, animationFrame;
 
-    window.addEventListener('mousedown', onDown, false);
-    window.addEventListener('touchstart', onDown, false);
-    window.addEventListener('mouseup', onUp, false);
-    window.addEventListener('touchend', onUp, false);
+    window$1.addEventListener('mousedown', onDown, false);
+    window$1.addEventListener('touchstart', onDown, false);
+    window$1.addEventListener('mouseup', onUp, false);
+    window$1.addEventListener('touchend', onUp, false);
 
     /*
     IE does not trigger mouseup event when scrolling.
@@ -1811,14 +1852,14 @@ function AutoScroller(elements, options){
     https://connect.microsoft.com/IE/feedback/details/783058/scrollbar-trigger-mousedown-but-not-mouseup
     IE supports pointer events instead
     */
-    window.addEventListener('pointerup', onUp, false);
+    window$1.addEventListener('pointerup', onUp, false);
 
-    window.addEventListener('mousemove', onMove, false);
-    window.addEventListener('touchmove', onMove, false);
+    window$1.addEventListener('mousemove', onMove, false);
+    window$1.addEventListener('touchmove', onMove, false);
 
-    window.addEventListener('mouseleave', onMouseOut, false);
+    window$1.addEventListener('mouseleave', onMouseOut, false);
 
-    window.addEventListener('scroll', setScroll, true);
+    window$1.addEventListener('scroll', setScroll, true);
 
     function setScroll(e){
 
@@ -1830,7 +1871,7 @@ function AutoScroller(elements, options){
         }
 
         if(scrolling){
-            requestAnimationFrame(function (){ return scrolling = false; });
+            requestFrame(function (){ return scrolling = false; });
         }
     }
 
@@ -1843,8 +1884,8 @@ function AutoScroller(elements, options){
         cleanAnimation();
     }
     function cleanAnimation(){
-      cancelAnimationFrame(animationFrame);
-      cancelAnimationFrame(windowAnimationFrame);
+      cancelFrame(animationFrame);
+      cancelFrame(windowAnimationFrame);
     }
     function onMouseOut(){
         down = false;
@@ -1916,8 +1957,8 @@ function AutoScroller(elements, options){
         }
 
         if(hasWindow){
-            cancelAnimationFrame(windowAnimationFrame);
-            windowAnimationFrame = requestAnimationFrame(scrollWindow);
+            cancelFrame(windowAnimationFrame);
+            windowAnimationFrame = requestFrame(scrollWindow);
         }
 
 
@@ -1925,15 +1966,15 @@ function AutoScroller(elements, options){
             return;
         }
 
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(scrollTick);
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
     }
 
     function scrollWindow(){
         autoScroll(hasWindow);
 
-        cancelAnimationFrame(windowAnimationFrame);
-        windowAnimationFrame = requestAnimationFrame(scrollWindow);
+        cancelFrame(windowAnimationFrame);
+        windowAnimationFrame = requestFrame(scrollWindow);
     }
 
     function scrollTick(){
@@ -1944,8 +1985,8 @@ function AutoScroller(elements, options){
 
         autoScroll(current);
 
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(scrollTick);
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
 
     }
 
@@ -2006,16 +2047,16 @@ function AutoScroller(elements, options){
     }
 
     function scrollY(el, amount){
-        if(el === window){
-            window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
+        if(el === window$1){
+            window$1.scrollTo(el.pageXOffset, el.pageYOffset + amount);
         }else{
             el.scrollTop += amount;
         }
     }
 
     function scrollX(el, amount){
-        if(el === window){
-            window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
+        if(el === window$1){
+            window$1.scrollTo(el.pageXOffset + amount, el.pageYOffset);
         }else{
             el.scrollLeft += amount;
         }

@@ -18,7 +18,6 @@
   "author": "Quentin Engles <hollowdoor99@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "animation-frame-polyfill": "^1.0.0",
     "create-point-cb": "^1.0.0",
     "dom-mousemove-dispatcher": "^1.0.1",
     "dom-plane": "^1.0.1",

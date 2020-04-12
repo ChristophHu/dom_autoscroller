@@ -13,6 +13,47 @@ import {
 
 import mousemoveDispatcher from 'dom-mousemove-dispatcher';
 
+const prefix = [ 'webkit', 'moz', 'ms', 'o' ];
+const window = typeof window !== "undefined" ? window : {};
+
+const requestFrame = (() => {
+
+    for ( let i = 0, limit = prefix.length ; i < limit && ! window.requestAnimationFrame ; ++i ) {
+        window.requestAnimationFrame = window[ prefix[ i ] + 'RequestAnimationFrame' ];
+    }
+
+    if ( ! window.requestAnimationFrame ) {
+        let lastTime = 0;
+
+        window.requestAnimationFrame = callback => {
+            const now   = new Date().getTime();
+            const ttc   = Math.max( 0, 16 - now - lastTime );
+            const timer = window.setTimeout( () => callback( now + ttc ), ttc );
+
+            lastTime = now + ttc;
+
+            return timer;
+        };
+    }
+
+    return window.requestAnimationFrame.bind( window );
+})();
+
+const cancelFrame = (() => {
+
+    for ( let i = 0, limit = prefix.length ; i < limit && ! window.cancelAnimationFrame ; ++i ) {
+        window.cancelAnimationFrame = window[ prefix[ i ] + 'CancelAnimationFrame' ] || window[ prefix[ i ] + 'CancelRequestAnimationFrame' ];
+    }
+
+    if ( ! window.cancelAnimationFrame ) {
+        window.cancelAnimationFrame = timer => {
+            window.clearTimeout( timer );
+        };
+    }
+
+    return window.cancelAnimationFrame.bind( window );
+})();
+
 function AutoScroller(elements, options = {}){
     const self = this;
     let maxSpeed = 4, scrolling = false;
@@ -129,7 +170,7 @@ function AutoScroller(elements, options = {}){
         }
 
         if(scrolling){
-            requestAnimationFrame(()=>scrolling = false)
+            requestFrame(()=>scrolling = false)
         }
     }
 
@@ -142,8 +183,8 @@ function AutoScroller(elements, options = {}){
         cleanAnimation();
     }
     function cleanAnimation(){
-      cancelAnimationFrame(animationFrame);
-      cancelAnimationFrame(windowAnimationFrame);
+      cancelFrame(animationFrame);
+      cancelFrame(windowAnimationFrame);
     }
     function onMouseOut(){
         down = false;
@@ -215,8 +256,8 @@ function AutoScroller(elements, options = {}){
         }
 
         if(hasWindow){
-            cancelAnimationFrame(windowAnimationFrame);
-            windowAnimationFrame = requestAnimationFrame(scrollWindow);
+            cancelFrame(windowAnimationFrame);
+            windowAnimationFrame = requestFrame(scrollWindow);
         }
 
 
@@ -224,15 +265,15 @@ function AutoScroller(elements, options = {}){
             return;
         }
 
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(scrollTick);
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
     }
 
     function scrollWindow(){
         autoScroll(hasWindow);
 
-        cancelAnimationFrame(windowAnimationFrame);
-        windowAnimationFrame = requestAnimationFrame(scrollWindow);
+        cancelFrame(windowAnimationFrame);
+        windowAnimationFrame = requestFrame(scrollWindow);
     }
 
     function scrollTick(){
@@ -243,8 +284,8 @@ function AutoScroller(elements, options = {}){
 
         autoScroll(current);
 
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(scrollTick);
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
 
     }
 

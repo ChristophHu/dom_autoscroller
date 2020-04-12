@@ -3,6 +3,47 @@ import { addElements, hasElement, removeElements } from 'dom-set';
 import { createPointCB, getClientRect, pointInside } from 'dom-plane';
 import mousemoveDispatcher from 'dom-mousemove-dispatcher';
 
+var prefix = [ 'webkit', 'moz', 'ms', 'o' ];
+var window = typeof window !== "undefined" ? window : {};
+
+var requestFrame = (function () {
+
+    for ( var i = 0, limit = prefix.length ; i < limit && ! window.requestAnimationFrame ; ++i ) {
+        window.requestAnimationFrame = window[ prefix[ i ] + 'RequestAnimationFrame' ];
+    }
+
+    if ( ! window.requestAnimationFrame ) {
+        var lastTime = 0;
+
+        window.requestAnimationFrame = function (callback) {
+            var now   = new Date().getTime();
+            var ttc   = Math.max( 0, 16 - now - lastTime );
+            var timer = window.setTimeout( function () { return callback( now + ttc ); }, ttc );
+
+            lastTime = now + ttc;
+
+            return timer;
+        };
+    }
+
+    return window.requestAnimationFrame.bind( window );
+})();
+
+var cancelFrame = (function () {
+
+    for ( var i = 0, limit = prefix.length ; i < limit && ! window.cancelAnimationFrame ; ++i ) {
+        window.cancelAnimationFrame = window[ prefix[ i ] + 'CancelAnimationFrame' ] || window[ prefix[ i ] + 'CancelRequestAnimationFrame' ];
+    }
+
+    if ( ! window.cancelAnimationFrame ) {
+        window.cancelAnimationFrame = function (timer) {
+            window.clearTimeout( timer );
+        };
+    }
+
+    return window.cancelAnimationFrame.bind( window );
+})();
+
 function AutoScroller(elements, options){
     if ( options === void 0 ) options = {};
 
@@ -127,7 +168,7 @@ function AutoScroller(elements, options){
         }
 
         if(scrolling){
-            requestAnimationFrame(function (){ return scrolling = false; });
+            requestFrame(function (){ return scrolling = false; });
         }
     }
 
@@ -140,8 +181,8 @@ function AutoScroller(elements, options){
         cleanAnimation();
     }
     function cleanAnimation(){
-      cancelAnimationFrame(animationFrame);
-      cancelAnimationFrame(windowAnimationFrame);
+      cancelFrame(animationFrame);
+      cancelFrame(windowAnimationFrame);
     }
     function onMouseOut(){
         down = false;
@@ -213,8 +254,8 @@ function AutoScroller(elements, options){
         }
 
         if(hasWindow){
-            cancelAnimationFrame(windowAnimationFrame);
-            windowAnimationFrame = requestAnimationFrame(scrollWindow);
+            cancelFrame(windowAnimationFrame);
+            windowAnimationFrame = requestFrame(scrollWindow);
         }
 
 
@@ -222,15 +263,15 @@ function AutoScroller(elements, options){
             return;
         }
 
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(scrollTick);
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
     }
 
     function scrollWindow(){
         autoScroll(hasWindow);
 
-        cancelAnimationFrame(windowAnimationFrame);
-        windowAnimationFrame = requestAnimationFrame(scrollWindow);
+        cancelFrame(windowAnimationFrame);
+        windowAnimationFrame = requestFrame(scrollWindow);
     }
 
     function scrollTick(){
@@ -241,8 +282,8 @@ function AutoScroller(elements, options){
 
         autoScroll(current);
 
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(scrollTick);
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
 
     }
 
