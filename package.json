@@ -1,5 +1,5 @@
 {
-  "name": "dom-autoscroller",
+  "name": "@mattlewis92/dom-autoscroller",
   "version": "2.3.4",
   "description": "Auto scroll dom elements",
   "main": "dist/bundle.js",
