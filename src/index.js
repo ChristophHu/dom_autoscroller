@@ -65,7 +65,7 @@ function AutoScroller(elements, options = {}){
     const self = this;
     let maxSpeed = 4, scrolling = false;
 
-    if (typeof this.margin !== 'object') {
+    if (typeof options.margin !== 'object') {
         const margin = options.margin || -1;
 
         this.margin = {
@@ -74,6 +74,8 @@ function AutoScroller(elements, options = {}){
             top: margin,
             bottom: margin
         }
+    } else {
+        this.margin = options.margin;
     }
 
     //this.scrolling = false;
