@@ -1756,7 +1756,17 @@ function AutoScroller(elements, options){
     var self = this;
     var maxSpeed = 4, scrolling = false;
 
-    this.margin = options.margin || -1;
+    if (typeof this.margin !== 'object') {
+        var margin = options.margin || -1;
+
+        this.margin = {
+            left: margin,
+            right: margin,
+            top: margin,
+            bottom: margin
+        };
+    }
+
     //this.scrolling = false;
     this.scrollWhenOutside = options.scrollWhenOutside || false;
 
@@ -1770,6 +1780,15 @@ function AutoScroller(elements, options){
 
     if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
+    }
+
+    if (typeof maxSpeed !== 'object') {
+        maxSpeed = {
+            left: maxSpeed,
+            right: maxSpeed,
+            top: maxSpeed,
+            bottom: maxSpeed
+        };
     }
 
     this.autoScroll = typeFunc.boolean(options.autoScroll);
@@ -2001,25 +2020,25 @@ function AutoScroller(elements, options){
     function autoScroll(el){
         var rect = domPlane.getClientRect(el), scrollx, scrolly;
 
-        if(point.x < rect.left + self.margin){
+        if(point.x < rect.left + self.margin.left){
             scrollx = Math.floor(
-                Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed
+                Math.max(-1, (point.x - rect.left) / self.margin.left - 1) * self.maxSpeed.left
             );
-        }else if(point.x > rect.right - self.margin){
+        }else if(point.x > rect.right - self.margin.right){
             scrollx = Math.ceil(
-                Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed
+                Math.min(1, (point.x - rect.right) / self.margin.right + 1) * self.maxSpeed.right
             );
         }else{
             scrollx = 0;
         }
 
-        if(point.y < rect.top + self.margin){
+        if(point.y < rect.top + self.margin.top){
             scrolly = Math.floor(
-                Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed
+                Math.max(-1, (point.y - rect.top) / self.margin.top - 1) * self.maxSpeed.top
             );
-        }else if(point.y > rect.bottom - self.margin){
+        }else if(point.y > rect.bottom - self.margin.bottom){
             scrolly = Math.ceil(
-                Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed
+                Math.min(1, (point.y - rect.bottom) / self.margin.bottom + 1) * self.maxSpeed.bottom
             );
         }else{
             scrolly = 0;
