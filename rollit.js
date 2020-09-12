@@ -4,14 +4,14 @@
 const buble = require('rollup-plugin-buble');
 const rollup = require('rollup');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
+const commonjs = require('@rollup/plugin-commonjs');
 const writeFile = require('fs').writeFile;
 const UglifyJS = require('uglify-js');
 const pack = require('./package.json');
 const external = Object.keys(pack.dependencies || {});
 
 rollup.rollup({
-    entry: 'src/index.js',
+    input: 'src/index.js',
     plugins: [
         nodeResolve({
             jsnext: true,
@@ -24,14 +24,18 @@ rollup.rollup({
     external: external
 }).then((bundle)=>{
     bundle.write({
-        dest: 'dist/bundle.js',
+        output: {
+            file: 'dist/bundle.js'
+        },
         format: 'cjs',
         moduleName: 'dom-autoscroller',
         sourceMap: true
     });
 
     bundle.write({
-        dest: 'dist/bundle.es.js',
+        output: {
+          file: 'dist/bundle.es.js'
+        },
         format: 'es',
         sourceMap: true
     });
@@ -40,7 +44,7 @@ rollup.rollup({
 
 
 rollup.rollup({
-    entry: 'src/index.js',
+    input: 'src/index.js',
     plugins: [
         nodeResolve({
             jsnext: true,
@@ -51,10 +55,12 @@ rollup.rollup({
     ],
 }).then((bundle)=>{
     let b = bundle.write({
-        dest: 'dist/dom-autoscroller.js',
+        output: {
+            file: 'dist/dom-autoscroller.js',
+            name: 'autoScroll'
+        },
         format: 'iife',
-        sourceMap: true,
-        moduleName: 'autoScroll'
+        sourceMap: true
     });
 
     b.then(what=>{
@@ -71,7 +77,7 @@ rollup.rollup({
 }).catch(onErrorCB('script sources'));
 
 rollup.rollup({
-    entry: 'test/src.js',
+    input: 'test/src.js',
     plugins: [
         nodeResolve({
             main: true
@@ -82,10 +88,12 @@ rollup.rollup({
 }).then(bundle=>{
     //console.log('what')
     bundle.write({
-        dest: 'test/code.js',
+        output: {
+            file: 'test/code.js',
+            name: 'autoScroll'
+        },
         format: 'iife',
-        sourceMap: true,
-        moduleName: 'autoScroll'
+        sourceMap: true
     });
 }).catch(onErrorCB('test code'));
 
