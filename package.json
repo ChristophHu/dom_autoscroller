@@ -1,13 +1,10 @@
 {
-  "name": "@mattlewis92/dom-autoscroller",
+  "name": "@christophhu/dom-autoscroller",
   "version": "2.4.2",
   "description": "Auto scroll dom elements",
   "main": "dist/bundle.js",
   "jsnext:main": "dist/bundle.es.js",
   "module": "dist/bundle.es.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ./rollit"
